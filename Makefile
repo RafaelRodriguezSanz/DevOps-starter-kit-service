@@ -1,4 +1,4 @@
-include .env build-args.env
+include build-args.env
 export
 
 build:
