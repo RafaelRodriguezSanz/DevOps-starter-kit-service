@@ -1,0 +1,42 @@
+name: Master release workflow
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  master_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Extract version from last release branch merged
+        id: extract_version
+        run: |
+          VERSION=$(git log -1 --pretty=%s | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION"
+
+      - name: Run make build
+        run: make build VERSION=$VERSION
+
+      - name: Run make latest
+        run: make latest VERSION=$VERSION
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Run make push
+        run: make push VERSION=$VERSION
+
+      - name: Tag and push final version
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag $VERSION
+          git push origin $VERSION
