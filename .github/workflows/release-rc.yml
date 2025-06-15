@@ -18,9 +18,14 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#release/}"
           COUNT=$(git ls-remote --tags origin "refs/tags/${VERSION}-RC-*" | wc -l)
-          RC_VERSION="${VERSION}-RC-$((COUNT + 1))"
+          if [ "$COUNT" -eq 0 ]; then
+            NEXT_RC=1
+          else
+            NEXT_RC=$((COUNT + 1))
+          fi
+          RC_VERSION="${VERSION}-RC-${NEXT_RC}"
           echo "RC_VERSION=$RC_VERSION" >> $GITHUB_ENV
-          echo "RC_VERSION=$RC_VERSION"  
+          echo "RC_VERSION=$RC_VERSION" 
 
       - name: Run make build
         run: make build VERSION=$VERSION
