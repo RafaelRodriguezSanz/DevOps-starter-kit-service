@@ -1,0 +1,9 @@
+FROM foo AS build
+WORKDIR /app
+
+# Build Project
+COPY . /app
+
+# Copy the build output to the final folder
+WORKDIR /app/build
+CMD ["cp", "-r", "/app", "/app/build"]

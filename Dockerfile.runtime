@@ -1,0 +1,11 @@
+FROM bar as runtime
+
+ARG CONTAINER_PORT
+EXPOSE ${CONTAINER_PORT}
+WORKDIR /app
+
+# Copy the build output from the build stage
+COPY ./build /app
+
+# Run command
+ENTRYPOINT ["run", "build"]
